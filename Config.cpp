@@ -6,13 +6,13 @@
 /*   By: zoulhafi <zakariaa@oulhafiane.me>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/21 12:13:32 by zoulhafi          #+#    #+#             */
-/*   Updated: 2022/05/22 15:54:47 by zoulhafi         ###   ########.fr       */
+/*   Updated: 2022/05/24 17:55:14 by zoulhafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Config.hpp"
 
-Config::Config(std::string path) {
+Config::Config(std::string &path) {
 	std::ifstream		conf_file(path);
 	std::smatch			base_match;
 	if (!std::regex_match((std::string)path, base_match, std::regex(pattern_conf_filename))) {
@@ -70,10 +70,10 @@ void Config::_parse_config(std::ifstream &conf_file) {
 		} else if (std::regex_match(line, base_match, std::regex(pattern_end_accolade))) {
 			if (deep_level == 3 && (flags & mask_location) == mask_location) {
 				flags ^= mask_location;
-				_locations_config.insert(std::pair<std::string, string_string_map>("server_"+std::to_string(this->_servers_config.size()), location_tmp));
+				this->_locations_config.insert(std::pair<std::string, string_string_map>("server_"+std::to_string(this->_servers_config.size()), location_tmp));
 			} else if (deep_level == 2 && (flags & mask_server) == mask_server) {
 				flags ^= mask_server;
-				_servers_config.push_back(server_tmp);
+				this->_servers_config.push_back(server_tmp);
 			} else if (deep_level == 1 && (flags & mask_http) == mask_http) {
 				flags ^= mask_http;
 			}

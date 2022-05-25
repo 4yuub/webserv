@@ -6,15 +6,15 @@
 #    By: zoulhafi <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/20 00:06:42 by zoulhafi          #+#    #+#              #
-#    Updated: 2022/05/21 13:11:11 by zoulhafi         ###   ########.fr        #
+#    Updated: 2022/05/23 16:47:11 by zoulhafi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = webserv
 CC = c++
 FLAGS = -Wall -Wextra -Werror -std=c++98
-SRCS = main.cpp Config.cpp
-DEPS = Config.hpp 
+SRCS = main.cpp Config.cpp Server.cpp VirtualServer.cpp
+DEPS = Config.hpp Server.hpp VirtualServer.hpp 
 OBJECTS = $(SRCS:.cpp=.o)
 RED = \033[1;31m
 GREEN = \033[1;32m

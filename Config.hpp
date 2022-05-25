@@ -6,7 +6,7 @@
 /*   By: zoulhafi <zakariaa@oulhafiane.me>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/21 12:13:50 by zoulhafi          #+#    #+#             */
-/*   Updated: 2022/05/22 15:54:07 by zoulhafi         ###   ########.fr       */
+/*   Updated: 2022/05/24 18:17:21 by zoulhafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ class Config
 		void											_parse_config(std::ifstream &);
 
 	public:
-		Config(std::string path);
+		Config(std::string &path);
 		~Config();
 		const string_string_map							&get_global_config() const;
 		const string_string_map							&get_http_config() const;
