@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "Server.hpp"
+#include "Request.hpp"
 
 Server::Server(const Config &conf) {
 	int														count = 0;
@@ -162,7 +163,9 @@ void	Server::receive(struct pollfd &poll) const {
 		return ;
 	}
 	buff[rc] = '\0';
-	std::cout << "Data received: " << buff << std::endl;
+	std::cout << "Data received" << std::endl;
+	Request req(buff);
+	req.debug_print();
 	const char *c400 = "HTTP/1.1 200 Welcome\r\n"
         "Connection: close\r\n"
         "Content-Length: 8\r\n\r\nWelcome.";
