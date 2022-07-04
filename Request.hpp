@@ -22,27 +22,21 @@
 class Request
 {
     private:
-        std::string _method;
-        std::string _path;
-        std::string _version;
-        std::vector<std::pair<std::string, std::string> > _headers;
-        std::string _body;
-        std::string _raw_request;
-        bool is_body_set;
+        std::string												_method;
+        std::string												_path;
+        std::string												_version;
+        std::vector <std::pair<std::string, std::string> > 		_headers;
+        std::string 											_body;
+        std::string 											_raw_request;
+        bool													is_body_set;
         
     public:
         void init(std::string raw_request);
-
         void parse_first_line(std::string first_line);
-
         void parse_body(std::stringstream &ss);
-
         void parse_headers(std::stringstream &ss);
-
         void parse_request(std::string request_string);
-
         void debug_print();
-        
         Request(std::string request_string);
 };
 

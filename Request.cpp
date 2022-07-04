@@ -47,11 +47,8 @@ void Request::parse_body(std::stringstream &ss)
 void Request::parse_headers(std::stringstream &ss)
 {
     std::string line;
-    while(1)
+    while(std::getline(ss, line))
     {
-        std::getline(ss, line);
-        if (ss.eof())
-            break;
         if (line.find(":") == std::string::npos)
             return;
         std::stringstream line_ss(line);
