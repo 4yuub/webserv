@@ -32,11 +32,11 @@ class Server
 		void										_clear_pollfds();
 
 	public:
-		Server(Config &conf);
+		Server(const Config &conf);
 		~Server();
 		void										start();
 		void										accept_clients(const std::vector<int> &connections);
-		void										receive(struct pollfd &poll);
+		void										receive(struct pollfd &poll) const;
 };
 
 #endif
