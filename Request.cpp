@@ -26,9 +26,11 @@ void Request::init(std::string raw_request)
     _raw_request = raw_request;
 }
 
-void Request::parse_first_line(std::string first_line)
+void Request::parse_first_line(std::stringstream &ss)
 {
-    std::stringstream first_line_ss(first_line);
+    std::string line;
+    std::getline(ss, line);
+    std::stringstream first_line_ss(line);
     first_line_ss >> _method;
     first_line_ss >> _path;
     first_line_ss >> _version;
@@ -36,11 +38,10 @@ void Request::parse_first_line(std::string first_line)
 
 void Request::parse_body(std::stringstream &ss)
 {
-    std::string line;
-    while (std::getline(ss, line))
-    {
+
+    std::getline(ss, _body, '\0');
+    if (_body.length() > 0) {
         is_body_set = 1;
-        _body += line + "\n";
     }
 }
 
@@ -66,9 +67,7 @@ void Request::parse_headers(std::stringstream &ss)
 void Request::parse_request(std::string request_string)
 {
     std::stringstream ss(request_string);
-    std::string line;
-    std::getline(ss, line);
-    parse_first_line(line);
+    parse_first_line(ss);
     parse_headers(ss);
     parse_body(ss);
 }
@@ -90,4 +89,33 @@ Request::Request(std::string request_string)
 {
     init(request_string);
     parse_request(request_string);
+}
+
+
+std::string                                         Request::get_method(){
+    return _method;
+}
+
+std::string                                         Request::get_path(){
+    return _path;
+}
+
+std::string                                         Request::get_version(){
+    return _version;
+}
+
+std::string                                         Request::get_body(){
+    return _body;
+}
+
+std::string                                         Request::get_raw_request(){
+    return _raw_request;
+}
+
+std::vector<std::pair<std::string, std::string> >   Request::get_headers(){
+    return _headers;
+}
+
+bool                                                Request::is_body_setted(){
+    return is_body_set;
 }
