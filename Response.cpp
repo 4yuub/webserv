@@ -28,7 +28,7 @@ void Response::set_status_code(std::string &path)
 		_status_code = 200;
 }
 
-std::string Response::get_content_of_path(std::string path)
+std::string Response::get_content_of_path(std::string path) const
 {
 	if (_status_code == 404)
 		return "<h1>404 Not found</h1>";
@@ -73,7 +73,7 @@ Response::Response(Request &request)
 	handle_response(request);
 }
 
-std::string Response::operator*()
+std::string Response::operator*() const
 {
 	return this->_response;
 }

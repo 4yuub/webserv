@@ -72,7 +72,7 @@ void Request::parse_request(std::string request_string)
     parse_body(ss);
 }
 
-void Request::debug_print()
+void Request::debug_print() const
 {
     std::cout << "\033[32m" << "----------------------\033[0m" << std::endl;
     std::cout << "\033[33mMETHOD: \033[0m" << _method << " \033[33mPATH: \033[0m" << _path << "  \033[33mVERSION: \033[0m" << _version << std::endl;
@@ -92,30 +92,30 @@ Request::Request(std::string request_string)
 }
 
 
-std::string                                         Request::get_method(){
+std::string                                         Request::get_method() const{
     return _method;
 }
 
-std::string                                         Request::get_path(){
+std::string                                         Request::get_path() const{
     return _path;
 }
 
-std::string                                         Request::get_version(){
+std::string                                         Request::get_version() const{
     return _version;
 }
 
-std::string                                         Request::get_body(){
+std::string                                         Request::get_body() const{
     return _body;
 }
 
-std::string                                         Request::get_raw_request(){
+std::string                                         Request::get_raw_request() const{
     return _raw_request;
 }
 
-std::vector<std::pair<std::string, std::string> >   Request::get_headers(){
+std::vector<std::pair<std::string, std::string> >   Request::get_headers() const{
     return _headers;
 }
 
-bool                                                Request::is_body_setted(){
+bool                                                Request::is_body_setted() const{
     return is_body_set;
 }
