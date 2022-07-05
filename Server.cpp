@@ -12,6 +12,7 @@
 
 #include "Server.hpp"
 #include "Request.hpp"
+#include "Response.hpp"
 
 Server::Server(const Config &conf) {
 	int														count = 0;
@@ -166,8 +167,7 @@ void	Server::receive(struct pollfd &poll) const {
 	std::cout << "Data received" << std::endl;
 	Request req(buff);
 	req.debug_print();
-	const char *c400 = "HTTP/1.1 200 Welcome\r\n"
-        "Connection: close\r\n"
-        "Content-Length: 8\r\n\r\nWelcome.";
-	send(poll.fd, c400, strlen(c400), 0);
+	Response res(req);
+	std::string response = *res;
+	send(poll.fd, response.c_str(), response.length(), 0);
 }
