@@ -3,18 +3,18 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: zoulhafi <marvin@42.fr>                    +#+  +:+       +#+         #
+#    By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/20 00:06:42 by zoulhafi          #+#    #+#              #
-#    Updated: 2022/05/23 16:47:11 by zoulhafi         ###   ########.fr        #
+#    Updated: 2022/07/06 23:19:48 by akarafi          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = webserv
 CC = c++
 FLAGS = -Wall -Wextra -Werror -std=c++98
-SRCS = main.cpp Config.cpp Server.cpp VirtualServer.cpp Request.cpp Response.cpp
-DEPS = Config.hpp Server.hpp VirtualServer.hpp Request.hpp Response.hpp
+SRCS = main.cpp Config.cpp Server.cpp VirtualServer.cpp Request.cpp Response.cpp CGI.cpp
+DEPS = Config.hpp Server.hpp VirtualServer.hpp Request.hpp Response.hpp CGI.hpp
 OBJECTS = $(SRCS:.cpp=.o)
 RED = \033[1;31m
 GREEN = \033[1;32m
