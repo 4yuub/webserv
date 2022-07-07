@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/07/06 23:26:21 by akarafi           #+#    #+#             */
-/*   Updated: 2022/07/06 23:26:22 by akarafi          ###   ########.fr       */
+/*   Created: 2022/07/06 23:23:00 by akarafi           #+#    #+#             */
+/*   Updated: 2022/07/07 14:03:25 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ std::string CGI::_get_content() {
 
 void    CGI::_set_env_variables() {
     _env["GATEWAY_INTERFACE"] = "CGI/1.1";
+    _env["REDIRECT_STATUS"] = "200";
     _env["CONTENT_TYPE"] = "text/html"; //! GET FROM REQUEST
     _env["SERVER_SOFTWARE"] = "webserv";
     _env["SERVER_NAME"] = "webserv";
@@ -36,7 +37,6 @@ void    CGI::_set_env_variables() {
     _env["REQUEST_METHOD"] = _request.get_method();
     _env["SCRIPT_FILENAME"] = _file;
     _env["SCRIPT_NAME"] = _cgi_path;
-
 }
 
 char    **CGI::_get_env_array() {
@@ -93,7 +93,7 @@ void    CGI::_set_content() {
                 close(Ifd[0]);
         }
 
-        if (dup2(Ofd[1], 1) < 2) {
+        if (dup2(Ofd[1], 1) < 0) {
             std::cerr << "CGI ERROR" << strerror(errno) << std::endl;
             exit(1);
         }
@@ -118,8 +118,8 @@ void    CGI::_set_content() {
         char buffer[1024];
 
         do {
-            bzero(buffer, 1024);
             _content += buffer;
+            bzero(buffer, 1024);
         } while (read(Ofd[0], buffer, 1024) > 0);
         close(Ofd[0]);
 
