@@ -11,6 +11,7 @@ class Response
 {
 	private:
 		std::string						_response;
+		Request							&_request;
 		int								_status_code;
 		std::map<int, std::string>		_response_message;
 	public:

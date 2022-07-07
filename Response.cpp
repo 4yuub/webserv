@@ -1,4 +1,5 @@
 #include "Response.hpp"
+#include "CGI.hpp"
 
 int isDirectory(const char *path)
 {
@@ -36,10 +37,11 @@ std::string Response::get_content_of_path(std::string path) const
 		return "<h1>403 Forbidden</h1>";
 	else
 	{
-		std::ifstream file(path);
-		std::string content;
-		std::getline(file, content, '\0');
-		file.close();
+		// std::ifstream file(path);
+		// std::string content;
+		// std::getline(file, content, '\0');
+		// file.close();
+		std::string content = CGI(_request, path, "/usr/bin/php")._get_content();
 		return content;
 	}
 }
@@ -59,7 +61,7 @@ void Response::handle_response(Request &request)
 	std::string content;
 	std::string path = request.get_path();
 	if (path == "/")
-		path = "index.html";
+		path = "index.php";
 	else
 		path.erase(0, 1);
 	set_status_code(path);
@@ -67,7 +69,7 @@ void Response::handle_response(Request &request)
 	format_response(content);
 }
 
-Response::Response(Request &request)
+Response::Response(Request &request) : _request(request)
 {
 	init_response_code_message();
 	handle_response(request);
