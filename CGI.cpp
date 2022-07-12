@@ -6,7 +6,7 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/06 23:23:00 by akarafi           #+#    #+#             */
-/*   Updated: 2022/07/07 14:03:25 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/07/12 15:48:19 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ CGI::~CGI() {
 
 }
 
-std::string CGI::_get_content() {
+std::string CGI::_get_content() const {
     return _content;
 }
 
@@ -39,7 +39,7 @@ void    CGI::_set_env_variables() {
     _env["SCRIPT_NAME"] = _cgi_path;
 }
 
-char    **CGI::_get_env_array() {
+char    **CGI::_get_env_array() const {
     char **envp = new char*[_env.size() + 1];
     int i = 0;
     for (map_iterator it = _env.begin(); it != _env.end(); it++, i++) {
