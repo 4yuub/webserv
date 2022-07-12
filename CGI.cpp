@@ -6,7 +6,7 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/06 23:23:00 by akarafi           #+#    #+#             */
-/*   Updated: 2022/07/12 15:48:19 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/07/12 15:58:22 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,7 @@ void    CGI::_set_content() {
         }
         close(Ifd[1]);
         char buffer[1024];
+        bzero(buffer, 1024);
 
         do {
             _content += buffer;
