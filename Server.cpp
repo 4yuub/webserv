@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zoulhafi <zakariaa@oulhafiane.me>          +#+  +:+       +#+        */
+/*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/23 16:32:03 by zoulhafi          #+#    #+#             */
-/*   Updated: 2022/05/25 18:31:53 by zoulhafi         ###   ########.fr       */
+/*   Updated: 2022/07/14 23:19:24 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,6 +144,7 @@ void	Server::accept_clients(const std::vector<int> &connections) {
 			new_poll.fd = new_socket;
 			new_poll.events = POLLIN;
 			this->_pollfds.push_back(new_poll);
+			_clientSocket_hostSocket_map[new_socket] = *it;
 			std::cout << "New connection established." << std::endl;
 		}
 	}
@@ -167,7 +168,8 @@ void	Server::receive(struct pollfd &poll) const {
 	std::cout << "Data received" << std::endl;
 	Request req(buff);
 	req.debug_print();
-	Response res(req);
+	int _socket = _clientSocket_hostSocket_map.at(poll.fd);
+	Response res(req, _vservers.at(_socket));
 	std::string response = *res;
 	send(poll.fd, response.c_str(), response.length(), 0);
 }
