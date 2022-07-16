@@ -22,7 +22,7 @@ Server::Server(const Config &conf) {
 	for (std::vector<string_string_map>::const_iterator it=conf.get_servers_config().begin(); it!=conf.get_servers_config().end(); ++it) {
 		std::pair <string_map_multimap::const_iterator, string_map_multimap::const_iterator> locations;
 		locations = conf.get_locations_config().equal_range("server_"+std::to_string(count++));
-		VirtualServer vserver(*it, locations);
+		VirtualServer vserver(*it, locations, conf.get_http_config());
 		socket = this->_start_vserver(vserver);
 		it_vserver = this->_vservers.find(socket);
 		if (it_vserver != this->_vservers.end()) {

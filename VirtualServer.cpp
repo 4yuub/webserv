@@ -12,7 +12,7 @@
 
 #include "VirtualServer.hpp"
 
-VirtualServer::VirtualServer(const string_string_map &server_config, const string_string_range_multimap &locations) {
+VirtualServer::VirtualServer(const string_string_map &server_config, const string_string_range_multimap &locations, const string_string_map &http_config) {
 	string_string_map::const_iterator	it;
 	std::smatch							base_match;
 
@@ -45,6 +45,17 @@ VirtualServer::VirtualServer(const string_string_map &server_config, const strin
 		}
 	} else {
 		this->_server_names.push_back("");
+	}
+
+	it = server_config.find("root");
+	if (it != server_config.end()) {
+		this->_root = it->second;
+	} else {
+		it = http_config.find("root");
+		if (it != http_config.end())
+			this->_root = it->second;
+		else
+			this->_root = "/var/www/html";
 	}
 
 	for (string_map_multimap::const_iterator it=locations.first; it!=locations.second; ++it) {
@@ -83,6 +94,10 @@ const std::string					&VirtualServer::get_host() const {
 
 int									VirtualServer::get_port() const {
 	return this->_port;
+}
+
+const std::string					&VirtualServer::get_root() const {
+	return this->_root;
 }
 
 const std::vector<std::string>		&VirtualServer::get_server_names() const {
