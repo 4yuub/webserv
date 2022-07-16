@@ -34,16 +34,13 @@ std::string Response::get_content_of_path(std::string path) const
 	if (_status_code == 404)
 		return "<h1>404 Not found</h1>";
 	else if (_status_code == 403)
-		return "<h1>403 Forbidden</h1>";
-	else
-	{
-		// std::ifstream file(path);
-		// std::string content;
-		// std::getline(file, content, '\0');
-		// file.close();
-		std::string content = CGI(_request, path, "/usr/bin/php")._get_content();
-		return content;
-	}
+		return "<h1>403 Forbidden</h1>";	
+	// std::ifstream file(path);
+	// std::string content;
+	// std::getline(file, content, '\0');
+	// file.close();
+	std::string content = CGI(_request, path, "/usr/bin/php")._get_content();
+	return content;
 }
 
 void Response::format_response(std::string content)
@@ -60,12 +57,27 @@ void Response::handle_response(Request &request)
 {
 	std::string content;
 	std::string path = request.get_path();
-	if (path == "/")
-		path = "index.php";
-	else
-		path.erase(0, 1);
-	set_status_code(path);
-	content = get_content_of_path(path);
+	std::string location = _vserver->location_match(path);
+	std::string root;
+
+	if (location == "none") {
+		_status_code = 404;
+		content = "<h1>404 Not found</h1>";
+	}
+	else {
+		_status_code = 200;
+		std::map<std::string, std::string> const &_location = _vserver->get_locations().at(location);
+		location =  _location.at("location");
+		try {
+			root = _location.at("root");
+		}
+		catch (std::exception &e) {
+			root = _vserver->get_root();
+		}
+		path = root + path.erase(0, location.length() - 2);
+		set_status_code(path);
+		content = get_content_of_path(path);
+	}
 	format_response(content);
 }
 
