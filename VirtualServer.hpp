@@ -27,14 +27,16 @@ class VirtualServer
 	private:
 		std::string									_host;
 		int											_port;
+		std::string									_root;
 		std::vector<std::string>					_server_names;
 		std::map<std::string, string_string_map>	_locations;
 
 	public:
-		VirtualServer(const string_string_map &server_config, const string_string_range_multimap &locations);
+		VirtualServer(const string_string_map &server_config, const string_string_range_multimap &locations, const string_string_map &http_config);
 		~VirtualServer();
 		const std::string							&get_host() const;
 		int											get_port() const;
+		const std::string							&get_root() const;
 		const std::vector<std::string>				&get_server_names() const;
 		bool										location_match(const std::string &location) const;
 };
