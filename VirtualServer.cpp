@@ -6,7 +6,7 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/23 16:18:22 by zoulhafi          #+#    #+#             */
-/*   Updated: 2022/07/16 18:51:25 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/07/17 16:09:25 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,18 @@ VirtualServer::VirtualServer(const string_string_map &server_config, const strin
 		else
 			this->_root = "/var/www/html";
 	}
-
+	
+	it = server_config.find("index");
+	if (it != server_config.end()) {
+		this->_index = it->second;
+	} else {
+		it = http_config.find("index");
+		if (it != http_config.end())
+			this->_index = it->second;
+		else
+			this->_index = "";
+	}
+	
 	for (string_map_multimap::const_iterator it=locations.first; it!=locations.second; ++it) {
 		std::string							location;
 		string_string_map					tmp_location_rules;
@@ -98,6 +109,10 @@ int									VirtualServer::get_port() const {
 
 const std::string					&VirtualServer::get_root() const {
 	return this->_root;
+}
+
+const std::string					&VirtualServer::get_index() const {
+	return this->_index;
 }
 
 const std::vector<std::string>		&VirtualServer::get_server_names() const {

@@ -19,7 +19,7 @@ class Response
 		VirtualServer const 			 *_vserver;
 	public:
 		void init_response_code_message();
-	  	void set_status_code(std::string &path);
+	  	void set_status_code(std::string &path, std::map<std::string, std::string> const &_location);
 		std::string get_content_of_path(std::string path, std::map<std::string, std::string> const &location);	
 		void format_response(std::string content);
 		void handle_response(Request &request);

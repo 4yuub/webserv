@@ -19,12 +19,32 @@ void Response::init_response_code_message()
 	_response_message[502] = "Bad Gateway";		
 }
 
-void Response::set_status_code(std::string &path)
+void Response::set_status_code(std::string &path, std::map<std::string, std::string> const &_location)
 {
 	if (access(path.c_str(), F_OK) == -1)
 		_status_code = 404;
 	else if (access(path.c_str(), R_OK) == -1 || isDirectory(path.c_str()))
-		_status_code = 403;
+	{
+		std::string index;
+		try {
+			index = _location.at("index");
+		}
+		catch (std::exception &e) {
+			index = _vserver->get_index();
+			if (index == "")
+				_status_code = 403;
+			else
+			{
+				path += index;
+				if (access(path.c_str(), F_OK) == -1)
+					_status_code = 404;
+				else if (access(path.c_str(), R_OK) == -1)
+					_status_code = 403;
+				else
+					_status_code = 200;
+			}
+		}
+	}	
 	else
 		_status_code = 200;
 }
@@ -69,6 +89,7 @@ void Response::handle_response(Request &request)
 	std::string path = request.get_path();
 	std::string location = _vserver->location_match(path);
 	std::string root;
+	std::string index;
 
 	if (location == "none") {
 		_status_code = 404;
@@ -85,7 +106,7 @@ void Response::handle_response(Request &request)
 			root = _vserver->get_root();
 		}
 		path = root + path.erase(0, location.length() - 2);
-		set_status_code(path);
+		set_status_code(path, _location);
 		content = get_content_of_path(path, _location);
 	}
 	format_response(content);
