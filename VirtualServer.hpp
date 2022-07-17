@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   VirtualServer.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zoulhafi <zakariaa@oulhafiane.me>          +#+  +:+       +#+        */
+/*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/23 14:11:48 by zoulhafi          #+#    #+#             */
-/*   Updated: 2022/05/25 18:32:38 by zoulhafi         ###   ########.fr       */
+/*   Updated: 2022/07/16 23:42:00 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,12 @@ class VirtualServer
 	public:
 		VirtualServer(const string_string_map &server_config, const string_string_range_multimap &locations, const string_string_map &http_config);
 		~VirtualServer();
-		const std::string							&get_host() const;
-		int											get_port() const;
-		const std::string							&get_root() const;
-		const std::vector<std::string>				&get_server_names() const;
-		bool										location_match(const std::string &location) const;
+		const std::string								&get_host() const;
+		int												get_port() const;
+		const std::string								&get_root() const;
+		const std::vector<std::string>					&get_server_names() const;
+		std::map<std::string, string_string_map> const	&get_locations() const;
+		std::string									    location_match(const std::string &location) const;
 };
 
 #endif

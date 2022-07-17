@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   VirtualServer.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zoulhafi <zakariaa@oulhafiane.me>          +#+  +:+       +#+        */
+/*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/23 16:18:22 by zoulhafi          #+#    #+#             */
-/*   Updated: 2022/05/25 14:11:00 by zoulhafi         ###   ########.fr       */
+/*   Updated: 2022/07/16 18:51:25 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,14 +104,25 @@ const std::vector<std::string>		&VirtualServer::get_server_names() const {
 	return this->_server_names;
 }
 
-bool								VirtualServer::location_match(const std::string &location) const {
+std::map<std::string, string_string_map> const &VirtualServer::get_locations() const {
+	return this->_locations;
+}
+
+std::string								VirtualServer::location_match(const std::string &location) const {
 	std::smatch													base_match;
 	std::map<std::string, string_string_map>::const_iterator	it;
+	std::string	match = "none";
 
 	for (it = this->_locations.begin(); it != this->_locations.end(); ++it) {
 		if (std::regex_match(location, base_match, std::regex(it->first))) {
-			return true;
+			if (match == "none") {
+				match = it->first;
+				continue;
+			}
+			if (match.length() < it->first.length()) {
+				match = it->first;
+			}
 		}
 	}
-	return false;
+	return match;
 }

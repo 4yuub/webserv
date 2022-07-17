@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zoulhafi <zakariaa@oulhafiane.me>          +#+  +:+       +#+        */
+/*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/23 14:03:13 by zoulhafi          #+#    #+#             */
-/*   Updated: 2022/05/25 18:32:26 by zoulhafi         ###   ########.fr       */
+/*   Updated: 2022/07/14 22:43:52 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ class Server
 {
 	private:
 		std::map<std::pair<std::string, int>, int>	_host_port_socket_map;
+		std::map<int, int>							_clientSocket_hostSocket_map;
 		std::map<int, std::vector<VirtualServer> >	_vservers;
 		std::vector<pollfd>							_pollfds;
 		int											_start_vserver(const VirtualServer &vserver);
