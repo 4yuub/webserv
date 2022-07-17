@@ -6,7 +6,7 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/06 23:23:00 by akarafi           #+#    #+#             */
-/*   Updated: 2022/07/17 00:19:07 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/07/17 01:54:20 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,16 @@ CGI::CGI(Request const &_req, std::string const &_file_path, std::string const &
     : _request(_req) , _cgi_path(_fast_cgi_path), _file(_file_path)
 {
     _content = "";
+    _status = 200;
     _set_content();
 }
 
 CGI::~CGI() {
 
+}
+
+int CGI::_get_status() const {
+    return _status;
 }
 
 std::string CGI::_get_content() const {
@@ -123,7 +128,10 @@ void    CGI::_set_content() {
             bzero(buffer, 1024);
         } while (read(Ofd[0], buffer, 1024) > 0);
         close(Ofd[0]);
-
-        wait(NULL);
+        int status;
+        wait(&status);
+        if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
+            _status = 500;
+        }
     }
 }

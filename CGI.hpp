@@ -6,7 +6,7 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/06 23:26:19 by akarafi           #+#    #+#             */
-/*   Updated: 2022/07/12 15:46:51 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/07/17 01:35:45 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,12 @@ class CGI
         std::string const                   &_cgi_path;
         std::string const                   &_file;
         std::string                         _content;
+        int                                 _status;
     public:
         CGI(Request const &_req, std::string const &_file_path, std::string const &_fast_cgi_path);
         ~CGI();
         std::string _get_content() const;
+        int         _get_status() const;
     
     private:
         void        _set_content();
