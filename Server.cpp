@@ -151,22 +151,22 @@ void	Server::accept_clients(const std::vector<int> &connections) {
 }
 
 void	Server::receive(struct pollfd &poll) const {
-	int		rc;
-	char	buff[1000];
+	int				rc;
+	std::string		request_buff = "";
+	char			buff[1000];
 
-	rc = recv(poll.fd, buff, sizeof(buff), 0);
-	if (rc < 0) {
-		std::cerr << "Could not receive data from client." << std::endl;
-		return ;
-	} else if (rc == 0) {
+	while ((rc = recv(poll.fd, buff, sizeof(buff) - 1, 0)) > 0) {
+		buff[rc] = '\0';
+		request_buff += buff;
+	}
+	if (rc == 0) {
 		close(poll.fd);
 		poll.fd = -1;
 		std::cout << "Client disconnected." << std::endl;
 		return ;
 	}
-	buff[rc] = '\0';
 	std::cout << "Data received" << std::endl;
-	Request req(buff);
+	Request req(request_buff);
 	// req.debug_print();
 	int _socket = _clientSocket_hostSocket_map.at(poll.fd);
 	Response res(req, _vservers.at(_socket));
