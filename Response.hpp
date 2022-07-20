@@ -17,6 +17,7 @@ class Response
 		std::map<int, std::string>		 _response_message;
 		std::vector<VirtualServer> const &_vservers;
 		VirtualServer const 			 *_vserver;
+		std::string						 _location;
 	public:
 		void init_response_code_message();
 	  	void set_status_code(std::string &path, std::map<std::string, std::string> const &_location);

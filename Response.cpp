@@ -79,13 +79,15 @@ void Response::format_response(std::string content)
 	_response += "Content-Type: text/html\r\n";
 	_response += "Content-Length: " + std::to_string(content.size()) + "\r\n";
 	_response += "Connection: close\r\n";
+	if (_status_code == 301)
+		_response += "Location: " + _location + "\r\n";
 	_response += "\r\n";
 	_response += content;
 }
 
 void Response::handle_response(Request &request)
 {
-	std::string content;
+	std::string content = "";
 	std::string path = request.get_path();
 	std::string location = _vserver->location_match(path);
 	std::string root;
@@ -100,14 +102,20 @@ void Response::handle_response(Request &request)
 		std::map<std::string, std::string> const &_location = _vserver->get_locations().at(location);
 		location =  _location.at("location");
 		try {
-			root = _location.at("root");
+			this->_location = _location.at("redirect") + path.erase(0, location.length() - 1);
+			_status_code = 301;
 		}
 		catch (std::exception &e) {
-			root = _vserver->get_root();
-		}
-		path = root + path.erase(0, location.length() - 2);
-		set_status_code(path, _location);
-		content = get_content_of_path(path, _location);
+			try {
+				root = _location.at("root");
+			}
+			catch (std::exception &e) {
+				root = _vserver->get_root();
+			}
+			path = root + path.erase(0, location.length() - 2);
+			set_status_code(path, _location);
+			content = get_content_of_path(path, _location);
+		}	
 	}
 	format_response(content);
 }
