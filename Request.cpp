@@ -66,6 +66,8 @@ void Request::parse_headers(std::stringstream &ss)
             } catch (std::exception &ex) {
                 std::cerr << "Content-Length is Invalid" << std::endl;
             }
+        } else if (header.first == "Connection") {
+            this->_connection = header.second;
         }
         _headers.push_back(header);
     }
@@ -120,13 +122,19 @@ std::string                                         Request::get_body() const
     return _body;
 }
 
-void                                                Request::update_raw_request(std::string buff) {
-    _raw_request += buff;
-}
-
 std::string                                         Request::get_raw_request() const
 {
     return _raw_request;
+}
+
+void                                                Request::update_raw_request(std::string buff)
+{
+    _raw_request += buff;
+}
+
+std::string                                         Request::get_connection() const
+{
+    return _connection;
 }
 
 std::vector<std::pair<std::string, std::string> >   Request::get_headers() const

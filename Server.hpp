@@ -34,6 +34,7 @@ class Server
 		std::vector<pollfd>							_pollfds;
 		int											_start_vserver(const VirtualServer &vserver);
 		void										_clear_pollfds();
+		void										_close_socket(struct pollfd &current_poll);
 
 	public:
 		Server(const Config &conf);

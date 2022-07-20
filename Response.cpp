@@ -78,7 +78,8 @@ void Response::format_response(std::string content)
 	_response = "HTTP/1.1 " + std::to_string(_status_code) + " " + _response_message[_status_code] + "\r\n";
 	_response += "Content-Type: text/html\r\n";
 	_response += "Content-Length: " + std::to_string(content.size()) + "\r\n";
-	_response += "Connection: close\r\n";
+	if (this->_request.get_connection() == "close")
+		_response += "Connection: close\r\n";
 	_response += "\r\n";
 	_response += content;
 }

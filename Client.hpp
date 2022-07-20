@@ -14,6 +14,7 @@ class Client
         Client();
         Request         &get_request();
         std::time_t     get_last_time() const;
+        bool            is_timed_out() const;
         void            update_last_time();
         void            set_new_request();
 };

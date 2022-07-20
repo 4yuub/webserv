@@ -29,6 +29,7 @@ class Request
         std::string                                         _body;
         std::string                                         _raw_request;
         unsigned long                                       _content_length;
+        std::string                                         _connection;
         bool                                                _is_body_set;
         bool                                                _is_headers_ended;
         bool                                                _is_request_ended;
@@ -44,10 +45,11 @@ class Request
         std::string                                         get_method() const;
         std::string                                         get_path() const;
         std::string                                         get_version() const;
-        std::string                                         get_body() const;
-        void                                                update_raw_request(std::string buff);
-        std::string                                         get_raw_request() const;
         std::vector<std::pair<std::string, std::string> >   get_headers() const;
+        std::string                                         get_body() const;
+        std::string                                         get_raw_request() const;
+        void                                                update_raw_request(std::string buff);
+        std::string                                         get_connection() const;
         bool                                                is_body_setted() const;
         bool                                                is_headers_ended() const;
         bool                                                is_request_ended() const;

@@ -88,16 +88,46 @@ int		Server::_start_vserver(const VirtualServer &vserver) {
 }
 
 void	Server::_clear_pollfds() {
-	std::vector<int>	disconnected;
+	std::map<int, int>		disconnected;
 
-	for (size_t i = 0; i < this->_pollfds.size(); i++) {
-		if (this->_pollfds[i].fd == -1) {
-			disconnected.push_back(i);
+	for (std::map<int, Client>::iterator it = this->_clientSocket_client_map.begin(); it != this->_clientSocket_client_map.end(); ++it) {
+		if (it->second.is_timed_out()) {
+			disconnected[it->first] = -1;
+			close(it->first);
+			std::cout << "Client timed out." << std::endl;
 		}
 	}
-	for (size_t i = 0; i < disconnected.size(); i++) {
-		this->_pollfds.erase(this->_pollfds.begin() + disconnected[i]);
+	for (size_t i = 0; i < this->_pollfds.size(); i++) {
+		if (this->_pollfds[i].fd == -1) {
+			disconnected[this->_pollfds[i].fd] = i;
+		} else {
+			std::map<int, int>::iterator it = disconnected.find(this->_pollfds[i].fd);
+			if (it != disconnected.end()) {
+				disconnected[this->_pollfds[i].fd] = i;
+			}
+		}
 	}
+	for (std::map<int, int>::iterator it = disconnected.begin(); it != disconnected.end(); ++it) {
+		if (it->second != -1) {
+			this->_pollfds.erase(this->_pollfds.begin() + it->second);
+		}
+		this->_clientSocket_client_map.erase(it->first);
+		this->_clientSocket_hostSocket_map.erase(it->first);
+	}
+}
+
+void	Server::_close_socket(struct pollfd &current_poll)
+{
+	std::map<int, Client>::iterator it = _clientSocket_client_map.find(current_poll.fd);
+	if (it != _clientSocket_client_map.end()) {
+		_clientSocket_client_map.erase(it);
+	}
+	std::map<int, int>::iterator it2 = _clientSocket_hostSocket_map.find(current_poll.fd);
+	if (it2 != _clientSocket_hostSocket_map.end()) {
+		_clientSocket_hostSocket_map.erase(it2);
+	}
+	close(current_poll.fd);
+	current_poll.fd = -1;
 }
 
 void	Server::start() {
@@ -115,18 +145,12 @@ void	Server::start() {
 				if (current_poll.revents == 0) {
 					continue;
 				} else if (current_poll.revents & POLLHUP) {
-					it = this->_vservers.find(current_poll.fd);
-					if (it == this->_vservers.end()) {
-						this->_clientSocket_client_map.erase(current_poll.fd);
-					}
-					close(current_poll.fd);
-					current_poll.fd = -1;
 					std::cout << "Client disconnected." << std::endl;
+					_close_socket(current_poll);
 					continue;
 				} else if (!(current_poll.revents & POLLIN)) {
 					std::cerr << "Poll of fd : " << current_poll.fd << " - Error! revenets = " << current_poll.revents << std::endl;
-					close(current_poll.fd);
-					current_poll.fd = -1;
+					_close_socket(current_poll);
 					continue;
 				}
 				it = this->_vservers.find(current_poll.fd);
@@ -173,12 +197,11 @@ void	Server::receive(struct pollfd &poll) {
 	}
 	if (rc == -1 && buff[0] == '\0') {
 		std::cerr << "Error Occured: Cannot receive data from client." << std::endl;
+		_close_socket(poll);
 		return ;
 	} else if (rc == 0) {
-		this->_clientSocket_client_map.erase(poll.fd);
-		close(poll.fd);
-		poll.fd = -1;
 		std::cout << "Client disconnected." << std::endl;
+		_close_socket(poll);
 		return ;
 	}
 	std::cout << "Data received" << std::endl;
@@ -191,6 +214,11 @@ void	Server::receive(struct pollfd &poll) {
 		Response res(client.get_request(), _vservers.at(_socket));
 		std::string response = *res;
 		send(poll.fd, response.c_str(), response.length(), 0);
-		client.set_new_request();
+		if (client.get_request().get_connection() == "close") {
+			std::cout << "Client disconnected." << std::endl;
+			_close_socket(poll);
+		} else {
+			client.set_new_request();
+		}
 	}
 }
