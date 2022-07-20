@@ -37,9 +37,13 @@ void Request::parse_first_line(std::stringstream &ss)
 
 void Request::parse_body(std::stringstream &ss)
 {
-    std::getline(ss, _body, '\0');
-    if (_body.length() > 0) {
-        _is_body_set = true;
+    std::getline(ss, this->_body, '\0');
+    if (this->_body.length() > 0) {
+        this->_is_body_set = true;
+    }
+    if (this->_body.length() >= this->_content_length) {
+        this->_body.resize(this->_content_length);
+        this->_is_request_ended = true;
     }
 }
 
@@ -80,7 +84,7 @@ void Request::parse_request()
     parse_first_line(ss);
     parse_headers(ss);
     if (this->_is_headers_ended) {
-        if (this->_method == "GET") {
+        if (this->_method == "GET" || this->_content_length == 0) {
             this->_is_request_ended = true;
         } else { 
             parse_body(ss);
