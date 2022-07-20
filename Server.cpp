@@ -19,6 +19,11 @@ Server::Server(const Config &conf) {
 	int														socket;
 	std::map<int, std::vector<VirtualServer> >::iterator	it_vserver;
 
+	try {
+		this->_debug = conf.get_global_config().at("debug");
+	} catch (std::exception &ex) {
+		this->_debug = "false";
+	}
 	for (std::vector<string_string_map>::const_iterator it=conf.get_servers_config().begin(); it!=conf.get_servers_config().end(); ++it) {
 		std::pair <string_map_multimap::const_iterator, string_map_multimap::const_iterator> locations;
 		locations = conf.get_locations_config().equal_range("server_"+std::to_string(count++));
@@ -110,6 +115,10 @@ void	Server::start() {
 				if (current_poll.revents == 0) {
 					continue;
 				} else if (current_poll.revents & POLLHUP) {
+					it = this->_vservers.find(current_poll.fd);
+					if (it == this->_vservers.end()) {
+						this->_clientSocket_client_map.erase(current_poll.fd);
+					}
 					close(current_poll.fd);
 					current_poll.fd = -1;
 					std::cout << "Client disconnected." << std::endl;
@@ -145,31 +154,43 @@ void	Server::accept_clients(const std::vector<int> &connections) {
 			new_poll.events = POLLIN;
 			this->_pollfds.push_back(new_poll);
 			_clientSocket_hostSocket_map[new_socket] = *it;
+			_clientSocket_client_map[new_socket].update_last_time();
 			std::cout << "New connection established." << std::endl;
 		}
 	}
 }
 
-void	Server::receive(struct pollfd &poll) const {
+void	Server::receive(struct pollfd &poll) {
 	int				rc;
-	std::string		request_buff = "";
 	char			buff[1000];
 
+	Client &client = _clientSocket_client_map.at(poll.fd);
+	client.update_last_time();
+	memset(buff, 0, 1000);
 	while ((rc = recv(poll.fd, buff, sizeof(buff) - 1, 0)) > 0) {
 		buff[rc] = '\0';
-		request_buff += buff;
+		client.get_request().update_raw_request(buff);
 	}
-	if (rc == 0) {
+	if (rc == -1 && buff[0] == '\0') {
+		std::cerr << "Error Occured: Cannot receive data from client." << std::endl;
+		return ;
+	} else if (rc == 0) {
+		this->_clientSocket_client_map.erase(poll.fd);
 		close(poll.fd);
 		poll.fd = -1;
 		std::cout << "Client disconnected." << std::endl;
 		return ;
 	}
 	std::cout << "Data received" << std::endl;
-	Request req(request_buff);
-	// req.debug_print();
-	int _socket = _clientSocket_hostSocket_map.at(poll.fd);
-	Response res(req, _vservers.at(_socket));
-	std::string response = *res;
-	send(poll.fd, response.c_str(), response.length(), 0);
+	client.get_request().parse_request();
+	if (this->_debug == "true") {
+		client.get_request().debug_print();
+	}
+	if (client.get_request().is_request_ended()) {
+		int _socket = _clientSocket_hostSocket_map.at(poll.fd);
+		Response res(client.get_request(), _vservers.at(_socket));
+		std::string response = *res;
+		send(poll.fd, response.c_str(), response.length(), 0);
+		client.set_new_request();
+	}
 }
