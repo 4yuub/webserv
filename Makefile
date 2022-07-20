@@ -13,8 +13,8 @@
 NAME = webserv
 CC = c++
 FLAGS = -Wall -Wextra -Werror -std=c++98
-SRCS = main.cpp Config.cpp Server.cpp VirtualServer.cpp Request.cpp Response.cpp CGI.cpp
-DEPS = Config.hpp Server.hpp VirtualServer.hpp Request.hpp Response.hpp CGI.hpp
+SRCS = main.cpp Config.cpp Server.cpp Client.cpp VirtualServer.cpp Request.cpp Response.cpp CGI.cpp
+DEPS = Config.hpp Server.hpp Client.hpp VirtualServer.hpp Request.hpp Response.hpp CGI.hpp
 OBJECTS = $(SRCS:.cpp=.o)
 RED = \033[1;31m
 GREEN = \033[1;32m
