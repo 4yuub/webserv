@@ -21,23 +21,27 @@
 #include <unistd.h>
 #include "Config.hpp"
 #include "VirtualServer.hpp"
+#include "Client.hpp"
 
 class Server
 {
 	private:
+		std::string									_debug;
 		std::map<std::pair<std::string, int>, int>	_host_port_socket_map;
 		std::map<int, int>							_clientSocket_hostSocket_map;
+		std::map<int, Client>						_clientSocket_client_map;
 		std::map<int, std::vector<VirtualServer> >	_vservers;
 		std::vector<pollfd>							_pollfds;
 		int											_start_vserver(const VirtualServer &vserver);
 		void										_clear_pollfds();
+		void										_close_socket(struct pollfd &current_poll);
 
 	public:
 		Server(const Config &conf);
 		~Server();
 		void										start();
 		void										accept_clients(const std::vector<int> &connections);
-		void										receive(struct pollfd &poll) const;
+		void										receive(struct pollfd &poll);
 };
 
 #endif
