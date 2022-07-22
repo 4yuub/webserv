@@ -116,6 +116,14 @@ void Response::handle_response(Request &request)
 	{
 		std::string upload_path = location_map.at("upload_pass");
 		upload_path += path.erase(0, location.length() - 2);
+		if (_request.get_method() == "GET")
+		{
+			std::ifstream file(upload_path);
+			std::getline(file, content, '\0');
+			file.close();
+			format_response(content);
+			return ;
+		}
 		std::ofstream file(upload_path);
 		file << request.get_body();
 		if (!file.good())
