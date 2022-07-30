@@ -92,32 +92,60 @@ void Response::handle_response(Request &request)
 	std::string path = request.get_path();
 	std::string location = _vserver->location_match(path);
 	std::string root;
-	std::string index;
 
 	if (location == "none") {
 		_status_code = 404;
 		content = "<h1>404 Not found</h1>";
+		format_response(content);
+		return ;
 	}
-	else {
-		_status_code = 200;
-		std::map<std::string, std::string> const &_location = _vserver->get_locations().at(location);
-		location =  _location.at("location");
-		try {
-			this->_location = _location.at("redirect") + path.erase(0, location.length() - 1);
-			_status_code = 301;
+	std::map<std::string, std::string> const & \
+		location_map = _vserver->get_locations().at(location);
+	_status_code = 200;
+	location = location_map.at("location");
+	if (location_map.find("redirect") != location_map.end())
+	{
+		_status_code = 301;
+		_location = location_map.at("redirect") + path.erase(0, location.length() - 1);
+		content = "<h1>301 Moved Permanently</h1>";
+		format_response(content);
+		return ;
+	}
+
+	if (location_map.find("upload_pass") != location_map.end())
+	{
+		std::string upload_path = location_map.at("upload_pass");
+		upload_path += path.erase(0, location.length() - 2);
+		if (_request.get_method() == "GET")
+		{
+			std::ifstream file(upload_path);
+			std::getline(file, content, '\0');
+			file.close();
+			format_response(content);
+			return ;
 		}
-		catch (std::exception &e) {
-			try {
-				root = _location.at("root");
-			}
-			catch (std::exception &e) {
-				root = _vserver->get_root();
-			}
-			path = root + path.erase(0, location.length() - 2);
-			set_status_code(path, _location);
-			content = get_content_of_path(path, _location);
-		}	
+		std::ofstream file(upload_path);
+		file << request.get_body();
+		if (!file.good())
+		{
+			_status_code = 500;
+			content = "<h1>500 Internal Server Error</h1>";
+			format_response(content);
+			return ;
+		}
+		file.close();
+		content = "<h1>Upload Success</h1>";
+		format_response(content);
+		return ;
 	}
+
+	if (location_map.find("root") != location_map.end())
+		root = location_map.at("root");
+	else
+		root = _vserver->get_root();
+	path = root + path.erase(0, location.length() - 2);
+	set_status_code(path, location_map);
+	content = get_content_of_path(path, location_map);
 	format_response(content);
 }
 
