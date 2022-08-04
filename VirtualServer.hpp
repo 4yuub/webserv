@@ -6,7 +6,7 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/23 14:11:48 by zoulhafi          #+#    #+#             */
-/*   Updated: 2022/07/17 15:54:52 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/08/03 16:42:34 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ class VirtualServer
 		std::string									_index;
 		std::vector<std::string>					_server_names;
 		std::map<std::string, string_string_map>	_locations;
-
+		std::string									_allowed_methods;
 	public:
 		VirtualServer(const string_string_map &server_config, const string_string_range_multimap &locations, const string_string_map &http_config);
 		~VirtualServer();
@@ -40,6 +40,7 @@ class VirtualServer
 		const std::string								&get_root() const;
 		const std::string								&get_index() const;
 		const std::vector<std::string>					&get_server_names() const;
+		const std::string								&get_allowed_methods() const;
 		std::map<std::string, string_string_map> const	&get_locations() const;
 		std::string									    location_match(const std::string &location) const;
 };
