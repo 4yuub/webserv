@@ -6,7 +6,7 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/23 16:32:03 by zoulhafi          #+#    #+#             */
-/*   Updated: 2022/07/16 17:11:14 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/08/04 21:04:37 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ Server::Server(const Config &conf) {
 	} catch (std::exception &ex) {
 		this->_debug = "false";
 	}
+	_set_default_error_pages(conf);
 	for (std::vector<string_string_map>::const_iterator it=conf.get_servers_config().begin(); it!=conf.get_servers_config().end(); ++it) {
 		std::pair <string_map_multimap::const_iterator, string_map_multimap::const_iterator> locations;
 		locations = conf.get_locations_config().equal_range("server_"+std::to_string(count++));
@@ -42,6 +43,41 @@ Server::Server(const Config &conf) {
 
 Server::~Server() {
 
+}
+
+std::string get_content_of_file(std::string const &path) {
+	std::ifstream file(path);
+	std::string content;
+	std::getline(file, content, '\0');
+	return content;
+}
+
+void	Server::_set_default_error_pages(const Config &conf) {
+	std::map<std::string, std::string> g_config = conf.get_global_config();
+	this->_error_pages[400] = "<H1>400 Bad Request</H1>";
+	this->_error_pages[401] = "<H1>401 Unauthorized</H1>";
+	this->_error_pages[403] = "<H1>403 Forbidden</H1>";
+	this->_error_pages[404] = "<H1>404 Not Found</H1>";
+	this->_error_pages[405] = "<H1>405 Method Not Allowed</H1>";
+	this->_error_pages[500] = "<H1>500 Internal Server Error</H1>";
+	if (g_config["error_400"] != "") {
+		this->_error_pages[400] = get_content_of_file(g_config["error_400"]);
+	}
+	if (g_config["error_401"] != "") {
+		this->_error_pages[401] = get_content_of_file(g_config["error_401"]);
+	}
+	if (g_config["error_403"] != "") {
+		this->_error_pages[403] = get_content_of_file(g_config["error_403"]);
+	}
+	if (g_config["error_404"] != "") {
+		this->_error_pages[404] = get_content_of_file(g_config["error_404"]);
+	}
+	if (g_config["error_405"] != "") {
+		this->_error_pages[405] = get_content_of_file(g_config["error_405"]);
+	}
+	if (g_config["error_500"] != "") {
+		this->_error_pages[500] = get_content_of_file(g_config["error_500"]);
+	}
 }
 
 int		Server::_start_vserver(const VirtualServer &vserver) {
@@ -211,7 +247,7 @@ void	Server::receive(struct pollfd &poll) {
 	}
 	if (client.get_request().is_request_ended()) {
 		int _socket = _clientSocket_hostSocket_map.at(poll.fd);
-		Response res(client.get_request(), _vservers.at(_socket));
+		Response res(client.get_request(), _vservers.at(_socket), _error_pages);
 		std::string response = *res;
 		send(poll.fd, response.c_str(), response.length(), 0);
 		if (client.get_request().get_connection() == "close") {

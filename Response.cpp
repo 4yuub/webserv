@@ -94,6 +94,8 @@ std::string Response::get_content_of_path(std::string path, std::map<std::string
 
 void Response::format_response(std::string content)
 {
+	if (_status_code != 200 && _status_code != 301)
+		content = _error_pages[_status_code];
 	_response = "HTTP/1.1 " + std::to_string(_status_code) + " " + _response_message[_status_code] + "\r\n";
 	_response += "Content-Type: text/html\r\n";
 	_response += "Content-Length: " + std::to_string(content.size()) + "\r\n";
@@ -202,9 +204,10 @@ void Response::match_virtual_server() {
 	_vserver = &(*_vservers.begin());
 }
 
-Response::Response(Request &request, std::vector<VirtualServer> const &vservers)
-	: _request(request), _vservers(vservers)
+Response::Response(Request &request, std::vector<VirtualServer> const &vservers, std::map<int, std::string> &error_pages)
+	: _request(request), _vservers(vservers), _error_pages(error_pages)
 {
+	(void) _error_pages;
 	match_virtual_server();
 	init_response_code_message();
 	handle_response(request);

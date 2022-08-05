@@ -6,7 +6,7 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/23 14:03:13 by zoulhafi          #+#    #+#             */
-/*   Updated: 2022/07/14 22:43:52 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/08/04 15:37:42 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,10 +32,11 @@ class Server
 		std::map<int, Client>						_clientSocket_client_map;
 		std::map<int, std::vector<VirtualServer> >	_vservers;
 		std::vector<pollfd>							_pollfds;
+		std::map<int, std::string>					_error_pages;
 		int											_start_vserver(const VirtualServer &vserver);
 		void										_clear_pollfds();
 		void										_close_socket(struct pollfd &current_poll);
-
+		void										_set_default_error_pages(const Config &conf);
 	public:
 		Server(const Config &conf);
 		~Server();
