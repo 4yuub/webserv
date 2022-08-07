@@ -6,7 +6,7 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/23 16:18:22 by zoulhafi          #+#    #+#             */
-/*   Updated: 2022/07/17 16:09:25 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/08/03 16:43:50 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,17 @@ VirtualServer::VirtualServer(const string_string_map &server_config, const strin
 			this->_index = "";
 	}
 	
+	it = server_config.find("allowed_methods");
+	if (it != server_config.end()) {
+		this->_allowed_methods = it->second;
+	} else {
+		it = http_config.find("allowed_methods");
+		if (it != http_config.end())
+			this->_allowed_methods = it->second;
+		else
+			this->_allowed_methods = "";
+	}
+
 	for (string_map_multimap::const_iterator it=locations.first; it!=locations.second; ++it) {
 		std::string							location;
 		string_string_map					tmp_location_rules;
@@ -115,6 +126,10 @@ const std::string					&VirtualServer::get_index() const {
 	return this->_index;
 }
 
+const std::string					&VirtualServer::get_allowed_methods() const {
+	return this->_allowed_methods;
+}
+
 const std::vector<std::string>		&VirtualServer::get_server_names() const {
 	return this->_server_names;
 }
@@ -122,6 +137,8 @@ const std::vector<std::string>		&VirtualServer::get_server_names() const {
 std::map<std::string, string_string_map> const &VirtualServer::get_locations() const {
 	return this->_locations;
 }
+
+
 
 std::string								VirtualServer::location_match(const std::string &location) const {
 	std::smatch													base_match;

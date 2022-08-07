@@ -21,6 +21,23 @@ void Response::init_response_code_message()
 
 void Response::set_status_code(std::string &path, std::map<std::string, std::string> const &_location)
 {
+	std::string method = this->_request.get_method();
+	try {
+		std::string allowed_methods = _location.at("allowed_methods");
+		if (allowed_methods.find(method) == std::string::npos) {
+			this->_status_code = 405;
+			return;
+		}
+	}
+	catch (std::exception &e) {
+		std::string allowed_methods = _vserver->get_allowed_methods();
+		if (allowed_methods == "")
+			allowed_methods = "GET, POST, PATCH, PUT, DELETE";
+		if (allowed_methods.find(method) == std::string::npos) {
+			this->_status_code = 405;
+			return;
+		}
+	}
 	if (access(path.c_str(), F_OK) == -1)
 		_status_code = 404;
 	else if (access(path.c_str(), R_OK) == -1 || isDirectory(path.c_str()))
@@ -55,7 +72,9 @@ std::string Response::get_content_of_path(std::string path, std::map<std::string
 	if (_status_code == 404)
 		return "<h1>404 Not found</h1>";
 	else if (_status_code == 403)
-		return "<h1>403 Forbidden</h1>";	
+		return "<h1>403 Forbidden</h1>";
+	else if (_status_code == 405)
+		return "<h1>405 Method Not Allowed</h1>";
 	try {
 		std::string cgi_path = location.at("fastcgi_pass");
 		CGI gci(_request, path, cgi_path);
@@ -75,6 +94,8 @@ std::string Response::get_content_of_path(std::string path, std::map<std::string
 
 void Response::format_response(std::string content)
 {
+	if (_status_code != 200 && _status_code != 301)
+		content = _error_pages[_status_code];
 	_response = "HTTP/1.1 " + std::to_string(_status_code) + " " + _response_message[_status_code] + "\r\n";
 	_response += "Content-Type: text/html\r\n";
 	_response += "Content-Length: " + std::to_string(content.size()) + "\r\n";
@@ -183,9 +204,10 @@ void Response::match_virtual_server() {
 	_vserver = &(*_vservers.begin());
 }
 
-Response::Response(Request &request, std::vector<VirtualServer> const &vservers)
-	: _request(request), _vservers(vservers)
+Response::Response(Request &request, std::vector<VirtualServer> const &vservers, std::map<int, std::string> &error_pages)
+	: _request(request), _vservers(vservers), _error_pages(error_pages)
 {
+	(void) _error_pages;
 	match_virtual_server();
 	init_response_code_message();
 	handle_response(request);
