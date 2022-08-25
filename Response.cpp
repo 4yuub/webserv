@@ -22,6 +22,7 @@ void Response::init_response_code_message()
 void Response::set_status_code(std::string &path, std::map<std::string, std::string> const &_location)
 {
 	std::string method = this->_request.get_method();
+	_directory_listing = false;
 	try {
 		std::string allowed_methods = _location.at("allowed_methods");
 		if (allowed_methods.find(method) == std::string::npos) {
@@ -49,7 +50,35 @@ void Response::set_status_code(std::string &path, std::map<std::string, std::str
 		catch (std::exception &e) {
 			index = _vserver->get_index();
 			if (index == "")
-				_status_code = 403;
+			{
+				if (isDirectory(path.c_str()))
+					{
+						try
+						{
+							std::string directory_listing = _location.at("directory_listing");
+							if (directory_listing != "on")
+								_status_code = 403;
+							else
+							{
+								_status_code = 200;
+								this->_directory_listing = true;
+							}
+						}
+						catch (std::exception &e)
+						{
+							std::string directory_listing = _vserver->get_directory_listing();
+							if (directory_listing != "on")
+								_status_code = 403;
+							else
+							{
+								_status_code = 200;
+								this->_directory_listing = true;
+							}
+						}
+					}
+				else
+					_status_code = 403;
+			}
 			else
 			{
 				path += index;
@@ -66,6 +95,30 @@ void Response::set_status_code(std::string &path, std::map<std::string, std::str
 		_status_code = 200;
 }
 
+std::string Response::get_html_of_directory_listing(std::string const &path)
+{
+	DIR *dir;
+	struct dirent *ent;
+	std::string html = "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>Index of " + path + "</title></head><body><h1>Index of " + _request.get_path() + "</h1><hr><pre>";
+	if ((dir = opendir(path.c_str())) != NULL)
+	{
+		while ((ent = readdir(dir)) != NULL)
+		{
+			if (ent->d_name[0] != '.')
+			{
+				std::string file_path = path + "/" + ent->d_name;
+				if (isDirectory(file_path.c_str()))
+					html += "<a href=\"" + _request.get_path() + "/" + ent->d_name + "/\">" + ent->d_name + "/</a><br>";
+				else
+					html += "<a href=\"" + _request.get_path() + "/" + ent->d_name + "\">" + ent->d_name + "</a>\n";
+			}
+		}
+		closedir(dir);
+	}
+	html += "</pre></body></html>";
+	return html;
+}
+
 std::string Response::get_content_of_path(std::string path, std::map<std::string, std::string> const &location)
 {
 	std::string content;
@@ -75,6 +128,8 @@ std::string Response::get_content_of_path(std::string path, std::map<std::string
 		return "<h1>403 Forbidden</h1>";
 	else if (_status_code == 405)
 		return "<h1>405 Method Not Allowed</h1>";
+	else if (_directory_listing == true)
+		return get_html_of_directory_listing(path);
 	try {
 		std::string cgi_path = location.at("fastcgi_pass");
 		CGI gci(_request, path, cgi_path);

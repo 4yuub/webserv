@@ -32,6 +32,7 @@ class VirtualServer
 		std::vector<std::string>					_server_names;
 		std::map<std::string, string_string_map>	_locations;
 		std::string									_allowed_methods;
+		std::string									_directory_listing;
 	public:
 		VirtualServer(const string_string_map &server_config, const string_string_range_multimap &locations, const string_string_map &http_config);
 		~VirtualServer();
@@ -41,6 +42,7 @@ class VirtualServer
 		const std::string								&get_index() const;
 		const std::vector<std::string>					&get_server_names() const;
 		const std::string								&get_allowed_methods() const;
+		const std::string								&get_directory_listing() const;
 		std::map<std::string, string_string_map> const	&get_locations() const;
 		std::string									    location_match(const std::string &location) const;
 };

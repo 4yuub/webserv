@@ -80,6 +80,17 @@ VirtualServer::VirtualServer(const string_string_map &server_config, const strin
 			this->_allowed_methods = "";
 	}
 
+	it = server_config.find("directory_listing");
+	if (it != server_config.end()) {
+		this->_directory_listing = it->second;
+	} else {
+		it = http_config.find("directory_listing");
+		if (it != http_config.end())
+			this->_directory_listing = it->second;
+		else
+			this->_directory_listing = "";
+	}
+
 	for (string_map_multimap::const_iterator it=locations.first; it!=locations.second; ++it) {
 		std::string							location;
 		string_string_map					tmp_location_rules;
@@ -138,6 +149,9 @@ std::map<std::string, string_string_map> const &VirtualServer::get_locations() c
 	return this->_locations;
 }
 
+const std::string  					&VirtualServer::get_directory_listing() const {
+	return this->_directory_listing;
+}
 
 
 std::string								VirtualServer::location_match(const std::string &location) const {
