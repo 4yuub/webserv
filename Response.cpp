@@ -1,5 +1,6 @@
 #include "Response.hpp"
 #include "CGI.hpp"
+#include <algorithm>
 
 int isDirectory(const char *path)
 {
@@ -108,9 +109,9 @@ std::string Response::get_html_of_directory_listing(std::string const &path)
 			{
 				std::string file_path = path + "/" + ent->d_name;
 				if (isDirectory(file_path.c_str()))
-					html += "<a href=\"" + _request.get_path() + "/" + ent->d_name + "/\">" + ent->d_name + "/</a><br>";
+					html += "<a href=\"" + _request.get_path() + ent->d_name + "/\">" + ent->d_name + "/</a><br>";
 				else
-					html += "<a href=\"" + _request.get_path() + "/" + ent->d_name + "\">" + ent->d_name + "</a>\n";
+					html += "<a href=\"" + _request.get_path() + ent->d_name + "\">" + ent->d_name + "</a>\n";
 			}
 		}
 		closedir(dir);
@@ -219,7 +220,10 @@ void Response::handle_response(Request &request)
 		root = location_map.at("root");
 	else
 		root = _vserver->get_root();
-	path = root + path.erase(0, location.length() - 2);
+	if (location[0] == '~') 
+		path = root + path;
+	else
+		path = root + path.erase(0, location.length() - 2);
 	set_status_code(path, location_map);
 	content = get_content_of_path(path, location_map);
 	format_response(content);

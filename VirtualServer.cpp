@@ -6,7 +6,7 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/23 16:18:22 by zoulhafi          #+#    #+#             */
-/*   Updated: 2022/08/03 16:43:50 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/08/26 02:45:16 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ VirtualServer::VirtualServer(const string_string_map &server_config, const strin
 
 		if (it2 != it->second.end()) {
 			if (std::regex_match(it2->second, base_match, std::regex(pattern_location_modifier))) {
-				if (base_match[1] == "=") {
+				if (base_match[1] == "=" || base_match[1] == '~') {
 					location = base_match[2];
 				} else {
 					location = base_match[2];
@@ -163,6 +163,9 @@ std::string								VirtualServer::location_match(const std::string &location) co
 		if (std::regex_match(location, base_match, std::regex(it->first))) {
 			if (match == "none") {
 				match = it->first;
+				continue;
+			}
+			if ((_locations.at(match).at("location"))[0] == '~' && it->second.at("location")[0] != '~') {		
 				continue;
 			}
 			if (match.length() < it->first.length()) {

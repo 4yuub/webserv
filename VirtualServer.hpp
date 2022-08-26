@@ -6,7 +6,7 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/23 14:11:48 by zoulhafi          #+#    #+#             */
-/*   Updated: 2022/08/03 16:42:34 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/08/26 02:02:33 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ typedef std::pair <std::multimap<std::string, string_string_map>::const_iterator
 const std::string pattern_host_port = "^([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}):([0-9]+)$";
 const std::string pattern_only_ip = "^([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}):{0,1}$";
 const std::string pattern_only_port = "^:{0,1}([0-9]+)$";
-const std::string pattern_location_modifier = "\\s*([=|~|*|^|~|@]*)\\s*([a-z|A-Z|\\/|.|_]+)\\s*";
+const std::string pattern_location_modifier = "\\s*([=|~|*|^|~|@]*)\\s*([a-z|A-Z|\\/|.|_|\\.\\*\\^\\$\\+\\?\\(\\)\\|\\[\\]\\{\\}\\\\]+)\\s*";
 
 class VirtualServer
 {
