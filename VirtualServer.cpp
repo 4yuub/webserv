@@ -6,7 +6,7 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/23 16:18:22 by zoulhafi          #+#    #+#             */
-/*   Updated: 2022/08/03 16:43:50 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/08/26 02:45:16 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,17 @@ VirtualServer::VirtualServer(const string_string_map &server_config, const strin
 			this->_allowed_methods = "";
 	}
 
+	it = server_config.find("directory_listing");
+	if (it != server_config.end()) {
+		this->_directory_listing = it->second;
+	} else {
+		it = http_config.find("directory_listing");
+		if (it != http_config.end())
+			this->_directory_listing = it->second;
+		else
+			this->_directory_listing = "";
+	}
+
 	for (string_map_multimap::const_iterator it=locations.first; it!=locations.second; ++it) {
 		std::string							location;
 		string_string_map					tmp_location_rules;
@@ -87,7 +98,7 @@ VirtualServer::VirtualServer(const string_string_map &server_config, const strin
 
 		if (it2 != it->second.end()) {
 			if (std::regex_match(it2->second, base_match, std::regex(pattern_location_modifier))) {
-				if (base_match[1] == "=") {
+				if (base_match[1] == "=" || base_match[1] == '~') {
 					location = base_match[2];
 				} else {
 					location = base_match[2];
@@ -138,6 +149,9 @@ std::map<std::string, string_string_map> const &VirtualServer::get_locations() c
 	return this->_locations;
 }
 
+const std::string  					&VirtualServer::get_directory_listing() const {
+	return this->_directory_listing;
+}
 
 
 std::string								VirtualServer::location_match(const std::string &location) const {
@@ -149,6 +163,9 @@ std::string								VirtualServer::location_match(const std::string &location) co
 		if (std::regex_match(location, base_match, std::regex(it->first))) {
 			if (match == "none") {
 				match = it->first;
+				continue;
+			}
+			if ((_locations.at(match).at("location"))[0] == '~' && it->second.at("location")[0] != '~') {		
 				continue;
 			}
 			if (match.length() < it->first.length()) {
