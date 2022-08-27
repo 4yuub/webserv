@@ -47,6 +47,13 @@ void Response::set_status_code(std::string &path, std::map<std::string, std::str
 		std::string index;
 		try {
 			index = _location.at("index");
+			path += index;
+			if (access(path.c_str(), F_OK) == -1)
+				_status_code = 404;
+			else if (access(path.c_str(), R_OK) == -1)
+				_status_code = 403;
+			else
+				_status_code = 200;
 		}
 		catch (std::exception &e) {
 			index = _vserver->get_index();
