@@ -6,7 +6,7 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/23 16:32:03 by zoulhafi          #+#    #+#             */
-/*   Updated: 2022/08/04 21:04:37 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/08/28 10:15:12 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,7 @@ int		Server::_start_vserver(const VirtualServer &vserver) {
 		return it->second;
 	} else {
 		int						fd;
+		int						enable;
 		struct sockaddr_in		addr;
 		struct pollfd			pollfd;
 
@@ -103,6 +104,10 @@ int		Server::_start_vserver(const VirtualServer &vserver) {
 		fd = socket(addr.sin_family, SOCK_STREAM, 0);
 		if (fd < 0) {
 			throw std::runtime_error("Socket Creation Failed.");
+		}
+		enable = 1;
+		if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable)) < 0) {
+			throw std::runtime_error("Cannot set SO_REUSEADDR socket option.");
 		}
 		if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0) {
 			throw std::runtime_error("Cannot make file descriptor to non-blocking mode.");
