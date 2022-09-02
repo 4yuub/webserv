@@ -6,7 +6,7 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/06 23:23:00 by akarafi           #+#    #+#             */
-/*   Updated: 2022/07/17 01:54:20 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/09/02 18:19:16 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void    CGI::_set_content() {
     char    *cmd_list[3];
 
     if (pipe(Ifd) < 0 || pipe(Ofd) < 0) {
-        std::cerr << "CGI ERROR" << strerror(errno) << std::endl;
+        std::cerr << "CGI ERROR" << ": can't open pipe" << std::endl;
         return ;
     }
     cmd_list[0] = const_cast<char *>(_cgi_path.c_str());
@@ -83,7 +83,7 @@ void    CGI::_set_content() {
 
     int pid = fork();
     if (pid < 0) {
-        std::cerr << "CGI ERROR" << strerror(errno) << std::endl;
+        std::cerr << "CGI ERROR" << ": can't fork" << std::endl;
         return ;
     }
     if (pid == 0) {
@@ -91,7 +91,7 @@ void    CGI::_set_content() {
         close(Ofd[0]);
         if (_request.get_method() == "POST") {
             if (dup2(Ifd[0], 0) < 0) {
-                std::cerr << "CGI ERROR" << strerror(errno) << std::endl; 
+                std::cerr << "CGI ERROR" << ": fatal" << std::endl; 
                 exit(1);
             }
             else
@@ -99,13 +99,13 @@ void    CGI::_set_content() {
         }
 
         if (dup2(Ofd[1], 1) < 0) {
-            std::cerr << "CGI ERROR" << strerror(errno) << std::endl;
+            std::cerr << "CGI ERROR" << ": fatal" << std::endl;
             exit(1);
         }
 
         char **envp = _get_env_array();
         if (execve(cmd_list[0], cmd_list, envp) < 0) {
-            std::cerr << "CGI ERROR" << strerror(errno) << std::endl;
+            std::cerr << "CGI ERROR" << ": can't execute bainary file" << std::endl;
             exit(2);
         }
     }
@@ -115,7 +115,7 @@ void    CGI::_set_content() {
 
         if (_request.get_method() == "POST") {
             if (write(Ifd[1], _request.get_body().c_str(), _request.get_body().length()) < 0) {
-                std::cerr << "CGI ERROR" << strerror(errno) << std::endl;
+                std::cerr << "CGI ERROR" << ": can't write" << std::endl;
                 return ;
             }
         }

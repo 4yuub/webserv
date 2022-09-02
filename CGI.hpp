@@ -6,7 +6,7 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/06 23:26:19 by akarafi           #+#    #+#             */
-/*   Updated: 2022/07/17 01:35:45 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/09/02 18:19:53 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdio.h>
-#include <errno.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 
