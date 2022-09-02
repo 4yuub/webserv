@@ -27,7 +27,7 @@ class Response
 		std::string get_html_of_directory_listing(std::string const &path);
 	  	void set_status_code(std::string &path, std::map<std::string, std::string> const &_location);
 		std::string get_content_of_path(std::string path, std::map<std::string, std::string> const &location);	
-		void format_response(std::string content);
+		void format_response(std::string content, std::string headers="");
 		void handle_response(Request &request);
 		Response(Request &request, std::vector<VirtualServer> const &vservers, std::map<int, std::string> &error_pages);
 		std::string		operator*() const;

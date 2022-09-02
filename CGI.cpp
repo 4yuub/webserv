@@ -6,7 +6,7 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/06 23:23:00 by akarafi           #+#    #+#             */
-/*   Updated: 2022/09/02 18:19:16 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/09/02 19:06:13 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,19 @@ std::string CGI::_get_content() const {
     return _content;
 }
 
+std::string CGI::_get_cookies() const {
+    vector_string_string headers = _request.get_headers();
+    vector_string_string::iterator it;
+    for (it = headers.begin(); it < headers.end(); ++it) {
+        if (it->first == "Cookie") {
+			std::string cookies = it->second;
+			cookies.resize(cookies.length() - 1);
+			return cookies;
+		}
+    }
+    return "";
+}
+
 void    CGI::_set_env_variables() {
     _env["GATEWAY_INTERFACE"] = "CGI/1.1";
     _env["REDIRECT_STATUS"] = "200";
@@ -42,6 +55,7 @@ void    CGI::_set_env_variables() {
     _env["REQUEST_METHOD"] = _request.get_method();
     _env["SCRIPT_FILENAME"] = _file;
     _env["SCRIPT_NAME"] = _cgi_path;
+    _env["HTTP_COOKIE"] = _get_cookies();
 }
 
 char    **CGI::_get_env_array() const {
