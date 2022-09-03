@@ -6,7 +6,7 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/06 23:23:00 by akarafi           #+#    #+#             */
-/*   Updated: 2022/09/03 14:01:53 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/09/03 14:51:30 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ void    CGI::_set_content() {
     int     postFd[2];
     int     readFd[2];
     int     status;
-    char    *cmd_list[2];
+    char    *cmd_list[3];
 
     _set_env_variables();
     if (pipe(postFd) < 0 || pipe(readFd) < 0) {
@@ -85,7 +85,8 @@ void    CGI::_set_content() {
         return ;
     }
     cmd_list[0] = const_cast<char *>(_cgi_path.c_str());
-    cmd_list[1] = NULL;
+    cmd_list[1] = const_cast<char *>(_file.c_str());
+    cmd_list[2] = NULL;
     int pid = fork();
     if (pid == 0) {
         if (_request.get_method() == "POST") {
@@ -104,7 +105,7 @@ void    CGI::_set_content() {
         close(postFd[1]);
         char **envp = _get_env_array();
         execve(cmd_list[0], cmd_list, envp);
-        exit(0);
+        exit(1);
     }
     else {
         close(readFd[1]);
