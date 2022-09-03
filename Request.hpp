@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: atouhami <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/04 18:54:42 by atouhami          #+#    #+#             */
-/*   Updated: 2022/07/04 18:54:43 by atouhami         ###   ########.fr       */
+/*   Updated: 2022/09/03 12:54:32 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ class Request
         std::string                                         get_raw_request() const;
         void                                                update_raw_request(std::string buff);
         std::string                                         get_connection() const;
+        std::string                                         get_content_length() const;
         bool                                                is_body_setted() const;
         bool                                                is_headers_ended() const;
         bool                                                is_request_ended() const;

@@ -6,7 +6,7 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/06 23:26:19 by akarafi           #+#    #+#             */
-/*   Updated: 2022/09/02 19:05:53 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/09/03 12:38:27 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ class CGI
     private:
         void        _set_content();
         void        _set_env_variables();
-        std::string _get_cookies() const;
+        std::string _get_header(std::string const &) const;
         char        **_get_env_array() const;
 };
 

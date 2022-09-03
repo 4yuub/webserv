@@ -6,7 +6,7 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/04 18:54:34 by atouhami          #+#    #+#             */
-/*   Updated: 2022/07/14 23:20:09 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/09/03 12:54:05 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,6 +139,11 @@ void                                                Request::update_raw_request(
 std::string                                         Request::get_connection() const
 {
     return _connection;
+}
+
+std::string                                         Request::get_content_length() const
+{
+    return std::to_string(_content_length);
 }
 
 std::vector<std::pair<std::string, std::string> >   Request::get_headers() const
