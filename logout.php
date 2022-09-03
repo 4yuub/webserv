@@ -9,6 +9,8 @@
 <body>
     <?php
         session_start();
+        session_destroy();
     ?>
+    <h1>Logout successful</h1>
 </body>
 </html>

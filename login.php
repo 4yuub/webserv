@@ -8,7 +8,7 @@
 </head>
 <body>
     <form action="/login.php" method="POST">
-        <input name="user_name" placeholder="user name" />
+        <input name="username" placeholder="user name" />
         <input name="password" type="password" placeholder="password" />
         <input name="secret" placeholder="secret" />
         <input type="submit"/>
@@ -17,14 +17,14 @@
         session_start();
         $password = "123456";
         $user_name = "4yuub";
-        print_r($_POST);
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            if ($_POST["user_name"] !== $user_name || $_POST["password"] !== $password) {
+            if ($_POST["username"] !== $user_name || $_POST["password"] !== $password) {
                 echo "<h1>Invalid data!</h1>";
             }
             else {
-                $_SESSION["user_name"] = $user_name;
+                $_SESSION["username"] = $user_name;
                 $_SESSION["secret"] = $_POST["secret"];
+                header("Location: /content.php", true, 302);
             }
         }
     ?>

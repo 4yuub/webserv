@@ -148,6 +148,12 @@ std::string Response::get_content_of_path(std::string path, std::map<std::string
 		content = gci._get_content();
 		std::string headers = content.substr(0, content.find("\r\n\r\n")) + "\r\n";
 		std::string body = content.substr(content.find("\r\n\r\n")+4);
+		size_t status_idx = headers.find("Status: ");
+		if (status_idx != std::string::npos) {
+			int status = atoi(headers.substr(status_idx+7, 4).c_str());
+			if (status)
+				_status_code = status;
+		}
 		format_response(body, headers);
 		return "\r\rnone\r\r";// return value to go back without reforamting
 	}
