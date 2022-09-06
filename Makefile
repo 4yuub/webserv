@@ -6,14 +6,14 @@
 #    By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/20 00:06:42 by zoulhafi          #+#    #+#              #
-#    Updated: 2022/07/15 04:18:13 by akarafi          ###   ########.fr        #
+#    Updated: 2022/09/06 22:16:57 by akarafi          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = webserv
 CC = c++
 FLAGS = -Wall -Wextra -Werror -std=c++98
-SRCS = main.cpp Config.cpp Server.cpp Client.cpp VirtualServer.cpp Request.cpp Response.cpp CGI.cpp
+SRCS = main.cpp Config.cpp Server.cpp Client.cpp VirtualServer.cpp Request.cpp Response.cpp CGI.cpp chunked.cpp
 DEPS = Config.hpp Server.hpp Client.hpp VirtualServer.hpp Request.hpp Response.hpp CGI.hpp
 OBJECTS = $(SRCS:.cpp=.o)
 RED = \033[1;31m
