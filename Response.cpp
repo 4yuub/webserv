@@ -1,6 +1,7 @@
 #include "Response.hpp"
 #include "CGI.hpp"
 #include <algorithm>
+#include "chunked.hpp"
 
 int isDirectory(const char *path)
 {
@@ -171,7 +172,13 @@ void Response::format_response(std::string content, std::string headers)
 		content = _error_pages[_status_code];
 	_response = "HTTP/1.1 " + std::to_string(_status_code) + " " + _response_message[_status_code] + "\r\n";
 	_response += "Content-Type: text/html\r\n";
-	_response += "Content-Length: " + std::to_string(content.size()) + "\r\n";
+	if (content.size() < 400) {
+		_response += "Content-Length: " + std::to_string(content.size()) + "\r\n";
+	}
+	else {
+		_response += "Transfer-Encoding: chunked\r\n";
+		content = encode_body(content);
+	}
 	if (_status_code == 301)
 		_response += "Location: " + _location + "\r\n";
 	if (this->_request.get_connection() == "close")

@@ -6,7 +6,7 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/06 20:27:39 by akarafi           #+#    #+#             */
-/*   Updated: 2022/09/06 22:17:13 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/09/07 22:20:17 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,11 +44,15 @@ std::string encode_body(std::string const &body) {
     std::string encoded_body = "";
     std::stringstream sin(body);
     std::string line;
+
     while (std::getline(sin, line)) {
         if (line[line.size() - 1] != '\r') line += '\r';
         line += '\n';
-        encoded_body += std::to_string(line.size()) + "\r\n";
+        std::stringstream size;
+        size << std::hex << line.size();    
+        encoded_body += size.str() + "\r\n";
         encoded_body += line + "\r\n";
     }
+    encoded_body += "0\r\n\r\n";
     return encoded_body;
 }
