@@ -6,17 +6,19 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/04 18:54:34 by atouhami          #+#    #+#             */
-/*   Updated: 2022/09/03 12:54:05 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/09/07 19:31:59 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
+#include "chunked.hpp"
 
 Request::Request() :    _body(""),
                         _content_length(0),
                         _is_body_set(false),
                         _is_headers_ended(false),
-                        _is_request_ended(false) { }
+                        _is_request_ended(false),
+                        _is_chanked(false) { }
 
 std::string remove_spaces_from_beginning(std::string &str) {
     while (str[0] == ' ') {
@@ -41,9 +43,16 @@ void Request::parse_body(std::stringstream &ss)
     if (this->_body.length() > 0) {
         this->_is_body_set = true;
     }
-    if (this->_body.length() >= this->_content_length) {
+    if (!_is_chanked && this->_body.length() >= this->_content_length) {
         this->_body.resize(this->_content_length);
         this->_is_request_ended = true;
+    }
+    if (_is_chanked) {
+        if (_body.find("0\r\n\r\n")) {
+            this->_is_request_ended = true;
+            _body = decode_body(_body);
+            _content_length = _body.length();
+        }
     }
 }
 
@@ -64,6 +73,7 @@ void Request::parse_headers(std::stringstream &ss)
         std::pair<std::string, std::string> header;
         header.first = key;
         header.second = remove_spaces_from_beginning(value);
+        if (header.first == "Transfer-Encoding" && header.second == "chunked\r") _is_chanked = true;
         if (header.first == "Content-Length") {
             try {
                 this->_content_length = std::stoul(header.second, nullptr, 10);
@@ -84,7 +94,7 @@ void Request::parse_request()
     parse_first_line(ss);
     parse_headers(ss);
     if (this->_is_headers_ended) {
-        if (this->_method == "GET" || this->_content_length == 0) {
+        if (this->_method == "GET" || (this->_content_length == 0 && !_is_chanked)) {
             this->_is_request_ended = true;
         } else { 
             parse_body(ss);

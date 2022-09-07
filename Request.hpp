@@ -6,7 +6,7 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/04 18:54:42 by atouhami          #+#    #+#             */
-/*   Updated: 2022/09/03 12:54:32 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/09/06 22:12:58 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ class Request
         bool                                                _is_body_set;
         bool                                                _is_headers_ended;
         bool                                                _is_request_ended;
+        bool                                                _is_chanked;
         
     public:
         Request();
