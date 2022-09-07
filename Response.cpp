@@ -1,6 +1,7 @@
 #include "Response.hpp"
 #include "CGI.hpp"
 #include <algorithm>
+#include "chunked.hpp"
 
 int isDirectory(const char *path)
 {
@@ -146,6 +147,16 @@ std::string Response::get_content_of_path(std::string path, std::map<std::string
 			return "<h1>500 Internal Server Error</h1>";
 		}
 		content = gci._get_content();
+		std::string headers = content.substr(0, content.find("\r\n\r\n")) + "\r\n";
+		std::string body = content.substr(content.find("\r\n\r\n")+4);
+		size_t status_idx = headers.find("Status: ");
+		if (status_idx != std::string::npos) {
+			int status = atoi(headers.substr(status_idx+7, 4).c_str());
+			if (status)
+				_status_code = status;
+		}
+		format_response(body, headers);
+		return "\r\rnone\r\r";// return value to go back without reforamting
 	}
 	catch (std::exception &e) {
 		std::ifstream file(path);
@@ -155,17 +166,24 @@ std::string Response::get_content_of_path(std::string path, std::map<std::string
 	return content;
 }
 
-void Response::format_response(std::string content)
+void Response::format_response(std::string content, std::string headers)
 {
 	if (_status_code != 200 && _status_code != 301)
 		content = _error_pages[_status_code];
 	_response = "HTTP/1.1 " + std::to_string(_status_code) + " " + _response_message[_status_code] + "\r\n";
 	_response += "Content-Type: text/html\r\n";
-	_response += "Content-Length: " + std::to_string(content.size()) + "\r\n";
+	if (content.size() < 400) {
+		_response += "Content-Length: " + std::to_string(content.size()) + "\r\n";
+	}
+	else {
+		_response += "Transfer-Encoding: chunked\r\n";
+		content = encode_body(content);
+	}
 	if (_status_code == 301)
 		_response += "Location: " + _location + "\r\n";
 	if (this->_request.get_connection() == "close")
 		_response += "Connection: close\r\n";
+	_response += headers;
 	_response += "\r\n";
 	_response += content;
 }
@@ -233,6 +251,8 @@ void Response::handle_response(Request &request)
 		path = root + path.erase(0, location.length() - 2);
 	set_status_code(path, location_map);
 	content = get_content_of_path(path, location_map);
+	if (content == "\r\rnone\r\r")
+		return ;
 	format_response(content);
 }
 
