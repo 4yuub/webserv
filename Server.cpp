@@ -6,7 +6,7 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/23 16:32:03 by zoulhafi          #+#    #+#             */
-/*   Updated: 2022/08/28 10:15:12 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/09/13 20:18:58 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -254,8 +254,12 @@ void	Server::receive(struct pollfd &poll) {
 		int _socket = _clientSocket_hostSocket_map.at(poll.fd);
 		Response res(client.get_request(), _vservers.at(_socket), _error_pages);
 		std::string response = *res;
-		send(poll.fd, response.c_str(), response.length(), 0);
-		if (client.get_request().get_connection() == "close") {
+		int ret = send(poll.fd, response.c_str(), response.length(), 0);
+		if (ret < 0) {
+			std::cout << "Error Occured: Cannot send data to client." << std::endl;
+			_close_socket(poll);
+		}
+		else if (client.get_request().get_connection() == "close") {
 			std::cout << "Client disconnected." << std::endl;
 			_close_socket(poll);
 		} else {

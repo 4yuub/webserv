@@ -204,6 +204,19 @@ void Response::handle_response(Request &request)
 	std::map<std::string, std::string> const & \
 		location_map = _vserver->get_locations().at(location);
 	_status_code = 200;
+	if (location_map.find("body_size_limit") != location_map.end()) {
+		size_t max_size;
+		try {
+			max_size = std::stoi(location_map.at("body_size_limit"));
+			if (request.get_body().size() > max_size) {
+				_status_code = 400;
+				format_response("Default bad request page");
+				return;
+			}
+		} catch (std::exception & e) {
+			std::cerr << e.what() << std::endl;
+		}
+	}
 	location = location_map.at("location");
 	if (location_map.find("redirect") != location_map.end())
 	{
