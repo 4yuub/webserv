@@ -6,7 +6,7 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/23 16:32:03 by zoulhafi          #+#    #+#             */
-/*   Updated: 2022/09/13 20:18:58 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/09/17 22:57:34 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,7 @@ int		Server::_start_vserver(const VirtualServer &vserver) {
 		pollfd.events = POLLSTANDARD;
 		this->_pollfds.push_back(pollfd);
 		this->_host_port_socket_map.insert(std::pair<std::pair<std::string, int>, int>(std::pair<std::string, int>(vserver.get_host(), vserver.get_port()), fd));
-		std::cout << "Server listening on "+vserver.get_host()+":"+std::to_string(vserver.get_port()) << std::endl;
+		std::cout << "Server listening on http://"+vserver.get_host()+":"+std::to_string(vserver.get_port()) << std::endl;
 		return fd;
 	}
 }

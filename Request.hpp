@@ -6,7 +6,7 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/04 18:54:42 by atouhami          #+#    #+#             */
-/*   Updated: 2022/09/06 22:12:58 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/09/19 13:41:27 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ class Request
         std::string                                         _method;
         std::string                                         _path;
         std::string                                         _version;
+        std::string                                         _query_string;
         std::vector<std::pair<std::string, std::string> >   _headers;
         std::string                                         _body;
         std::string                                         _raw_request;
@@ -44,6 +45,7 @@ class Request
         void                                                debug_print() const;
         std::string                                         get_method() const;
         std::string                                         get_path() const;
+        std::string                                         get_query_string() const;
         std::string                                         get_version() const;
         std::vector<std::pair<std::string, std::string> >   get_headers() const;
         std::string                                         get_body() const;

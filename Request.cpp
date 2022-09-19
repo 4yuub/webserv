@@ -6,7 +6,7 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/04 18:54:34 by atouhami          #+#    #+#             */
-/*   Updated: 2022/09/07 19:31:59 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/09/19 13:41:06 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,9 @@ void Request::parse_first_line(std::stringstream &ss)
     std::stringstream first_line_ss(line);
     first_line_ss >> _method;
     first_line_ss >> _path;
+    std::stringstream tmp(_path);
+    std::getline(tmp, _path, '?');
+    std::getline(tmp,_query_string);
     first_line_ss >> _version;
 }
 
@@ -139,6 +142,11 @@ std::string                                         Request::get_body() const
 std::string                                         Request::get_raw_request() const
 {
     return _raw_request;
+}
+
+std::string                                         Request::get_query_string() const
+{
+    return _query_string;
 }
 
 void                                                Request::update_raw_request(std::string buff)
