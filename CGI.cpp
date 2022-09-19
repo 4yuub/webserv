@@ -6,7 +6,7 @@
 /*   By: akarafi <akarafi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/06 23:23:00 by akarafi           #+#    #+#             */
-/*   Updated: 2022/09/19 13:41:48 by akarafi          ###   ########.fr       */
+/*   Updated: 2022/09/19 14:13:34 by akarafi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,8 @@ void    CGI::_set_env_variables() {
     _env["SCRIPT_NAME"] = _file.substr(_file.rfind('/')+1);
     _env["HTTP_COOKIE"] = _get_header("Cookie");
     _env["CONTENT_LENGTH"] = _request.get_content_length();
+    if (_request.get_method() != "POST")
+        _env["CONTENT_LENGTH"] = "0";
     _env["QUERY_STRING"] = _request.get_query_string();
 }
 
