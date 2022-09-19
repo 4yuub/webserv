@@ -35,7 +35,7 @@ void Response::set_status_code(std::string &path, std::map<std::string, std::str
 	catch (std::exception &e) {
 		std::string allowed_methods = _vserver->get_allowed_methods();
 		if (allowed_methods == "")
-			allowed_methods = "GET, POST, PATCH, PUT, DELETE";
+			allowed_methods = "GET, POST, DELETE";
 		if (allowed_methods.find(method) == std::string::npos) {
 			this->_status_code = 405;
 			return;
